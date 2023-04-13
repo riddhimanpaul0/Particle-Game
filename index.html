@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game</title>
+    <style>
+        body {
+            margin: 0;
+            background-image: url('./img/B1.jpg');
+            background-size: cover;
+            background-position: center;
+            overflow: hidden; /* Hide scrollbars */
+        }
+    </style>
+</head>
+
+<body>
+    <div style="position: absolute; 
+                color: white; 
+                padding: 20px; 
+                font-family: sans-serif; 
+                font-size: 30px;
+                user-select: none;">
+        <span>
+            Score: 
+            <span id = "scoreElement">0</span>
+        </span>
+    </div>
+    <div style = "position: absolute; top: 0; right: 0; padding: 10px; cursor: pointer;">
+        <svg
+        id = "volumeUpElement"
+        xmlns="http://www.w3.org/2000/svg" 
+        fill="none" viewBox="0 0 24 24" 
+        stroke-width="1.5" 
+        stroke="currentColor" 
+        style = "color: white; width: 40px; height: 40px; "
+        >
+            <path 
+            stroke-linecap="round" 
+            stroke-linejoin="round" 
+            d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" 
+            />
+        </svg>
+
+        <svg
+        id = "volumeDownElement"
+        xmlns="http://www.w3.org/2000/svg" 
+        fill="none" viewBox="0 0 24 24" 
+        stroke-width="1.5" 
+        stroke="currentColor" 
+        style = "color: white; width: 40px; height: 40px; display: none;"
+        >
+            <path 
+            stroke-linecap="round" 
+            stroke-linejoin="round" 
+            d="M17.25 9.75L19.5 12m0 0l2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-6l4.72-4.72a.75.75 0 011.28.531V19.94a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.506-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.395C2.806 8.757 3.63 8.25 4.51 8.25H6.75z" 
+            />
+        </svg>
+          
+    </div>
+    
+      
+    <div 
+        id = "modalElement"
+        style=
+            "display: none;
+            position: absolute; 
+            top: 50%; 
+            left: 50%;
+            transform: translate(-50%, -50%); 
+            background-color: white;
+            padding: 20px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            font-family: sans-serif; 
+            border-radius: 30px;
+        ">
+        <h1 style="font-size: 30px; margin-bottom: 3; margin-top: 0;">GAME OVER</h1>
+        <h1 id = "modalScoreElement" style="font-size: 60px; margin-bottom: 0; margin-top: 0;">0</h1>
+        <p style = "margin: 0; font-size: 20px; color: gray;">Points</p>
+        <button 
+        id = "buttonElement"
+        style = 
+            "margin-top: 12px; 
+            background-color: aquamarine; 
+            border: none;
+            padding: 8px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            ">
+            Restart Game
+        </button>
+    </div>
+
+
+    <div 
+        id = "startModalElement"
+        style=
+            "
+            position: absolute; 
+            top: 50%; 
+            left: 50%;
+            transform: translate(-50%, -50%); 
+            background-color: white;
+            padding: 20px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            font-family: sans-serif; 
+            border-radius: 30px;
+            
+        ">
+        <h1 style="font-size: 30px; margin-bottom: 0; margin-top: 0;">BULLET GAME</h1>
+        <button 
+        id = "startButtonElement"
+        style = 
+            "margin-top: 12px; 
+            background-color: aquamarine; 
+            border: none;
+            padding: 8px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            ">
+            PLAY
+        </button>
+    </div>
+
+
+    
+
+    <canvas></canvas>
+    <script 
+        src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js" 
+        integrity="sha512-6+YN/9o9BWrk6wSfGxQGpt3EUK6XeHi6yeHV+TYD2GR0Sj/cggRpXr1BrAQf0as6XslxomMUxXp2vIl+fv0QRA==" 
+        crossorigin="anonymous" 
+        referrerpolicy="no-referrer">
+    </script>
+    <script 
+        src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js" 
+        integrity="sha512-cOH8ndwGgPo+K7pTvMrqYbmI8u8k6Sho3js0gOqVWTmQMlLIi6TbqGWRTpf1ga8ci9H3iPsvDLr4X7xwhC/+DQ==" 
+        crossorigin="anonymous" 
+        referrerpolicy="no-referrer">
+    </script>
+    <script src = "./audio.js"></script>
+    <script src = "./classes.js"></script>
+    <script src = "./index.js"></script>
+</body>
+</html>
+
+
+
