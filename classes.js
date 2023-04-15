@@ -176,7 +176,7 @@ class Particle {
 
 
 class BackgroundParticle {
-    constructor({position, radius = 3, color = 'blue'}) {
+    constructor({position, radius = 3, color = 'purple'}) {
         this.position = position
         this.radius = radius
         this.color = color

@@ -15,11 +15,8 @@ const volumeUpElement = document.querySelector('#volumeUpElement')
 const volumeDownElement = document.querySelector('#volumeDownElement')
 
 
-// Moving player to center, responsive
 
 let player
-
-
 let projectiles = []  //Array to hold all projectiles
 let enemies = []  //Array for enemies
 let particles = []  //Array for particles
@@ -31,7 +28,20 @@ let powerUps = []
 let backgroundParticles = []
 let game = false
 
-
+let audio1 = new Audio()
+audio1.src = "./audio/giorno.wav";
+const audioContext = new AudioContext();
+let audioSource;
+let analyser;
+audioSource = audioContext.createMediaElementSource(audio1);
+analyser = audioContext.createAnalyser();
+audioSource.connect(analyser);
+analyser.connect(audioContext.destination)
+analyser.fftSize = 256;
+const bufferLength = analyser.frequencyBinCount;
+const dataArray = new Uint8Array(bufferLength);
+let counter = 1;
+let remainder = 0;
 
 function init() {
     const x = canvas.width / 2
@@ -47,11 +57,10 @@ function init() {
     scoreElement.innerHTML = 0
     backgroundParticles = []
     game = true
+    const spacing = 50
 
-    const spacing = 40
-
-    for(let x = 0; x < canvas.width; x += spacing) {
-        for(let y = 0; y < canvas.height; y += spacing) {
+    for(let x = 20; x < canvas.width + 20; x += spacing) {
+        for(let y = 20; y < canvas.height + 20; y += spacing) {
             backgroundParticles.push(new BackgroundParticle({
                 position: {
                     x,
@@ -90,7 +99,7 @@ function spawnEnemies() {
         }
 
         enemies.push(new Enemy(x, y, radius, color, velocity))
-    }, 2000)
+    }, 1000)
 }
 
 function spawnPowerUps() {
@@ -105,7 +114,7 @@ function spawnPowerUps() {
                 y: 0
             }
         }))
-    }, 10000)
+    }, 15000)
 }
 
 function createScoreLabel({position, score}) {
@@ -129,10 +138,24 @@ function createScoreLabel({position, score}) {
 }
 
 
+
+
+function metronome() {
+    beat = setInterval(() => {
+        remainder = remainder === 1 ? 0 : 1;
+    }, 454)
+}
+
+
+
 function animate () {
     animationId = requestAnimationFrame(animate)
     c.fillStyle = 'rgba(0, 0, 0, 0.1)'
     c.fillRect(0, 0, canvas.width, canvas.height)
+    
+    analyser.getByteFrequencyData(dataArray);
+    const freq = dataArray.slice(1, 2)[0];
+    
     
     backgroundParticles.forEach(backgroundParticle => {
         backgroundParticle.draw()
@@ -141,20 +164,36 @@ function animate () {
             player.x - backgroundParticle.position.x, 
             player.y - backgroundParticle.position.y
         )
-        if(dist < 150) {
-            backgroundParticle.alpha = 0
 
-            if(dist > 130) {
-                backgroundParticle.alpha = 0.5
+        if( freq == 255 ) {
+
+            if (counter % 2 === remainder ) {
+                backgroundParticle.radius = 10
+            } else {
+                backgroundParticle.radius = 5
             }
-        } else if (dist > 150 && backgroundParticle.alpha < 0.1) {
-            backgroundParticle.alpha += 0.01
+        } 
+        else {
+            backgroundParticle.radius = 5
+        }
+        
+        counter++;
+        
+        if(dist < 130) {
+            backgroundParticle.alpha = 0
+            if(dist > 120) {
+                backgroundParticle.alpha = 0.7
+            }
         } else if (dist > 150 && backgroundParticle.alpha > 0.1) {
             backgroundParticle.alpha -= 0.01
         }
     })
+    
+    counter = 0;
 
     updatePlayerVelocity()
+
+  
     player.update() //drawing the player after every clear
 
     for (let i = powerUps.length -1; i >= 0; i--) {
@@ -222,6 +261,7 @@ function animate () {
             cancelAnimationFrame(animationId)
             clearInterval(intervalId)
             clearInterval(spawnPowerUpsId)
+            clearInterval(beat)
 
             audio.death.play()
             game = false
@@ -279,14 +319,28 @@ function animate () {
                     })
 
                     backgroundParticles.forEach(backgroundParticle=> {
-                        gsap.set(backgroundParticle, {
-                            color: 'white',
-                            alpha: 1
-                        })
-                        gsap.to(backgroundParticle, {
-                            color: enemy.color,
-                            alpha: 0.1
-                        })
+                        if (!(backgroundParticle.alpha === 0)) {
+                            gsap.set(backgroundParticle, {
+                                color: 'white',
+                                alpha: 1
+                            })
+
+                            gsap.to(backgroundParticle, {
+                                color: enemy.color
+                            })
+                        } else {
+                            gsap.set(backgroundParticle, {
+                                color: 'white',
+                            })
+
+                            gsap.to(backgroundParticle, {
+                                color: enemy.color
+                                
+                            })
+                        }
+                        
+                        
+                       
                         // backgroundParticle.color = enemy.color
                     })
 
@@ -341,7 +395,6 @@ addEventListener('mouseup', (event) => {
 })
 
 
-
 function shootProjectile(event) {
     if(game){   //Preventing shooting from start menu
         const angle = Math.atan2(
@@ -370,6 +423,7 @@ buttonElement.addEventListener('click', () => {
     animate()
     spawnEnemies()
     spawnPowerUps()
+    metronome()
     gsap.to('#modalElement', {
         opacity: 0,
         scale: 0.8,
@@ -389,15 +443,20 @@ startButtonElement.addEventListener('click', () => {
     // Disable the start button once pressed
     startButtonElement.disabled = true;
 
-    if (!audio.background.playing()) {
-        audio.background.play();
-    }
+    // if (!audio.background.playing()) {
+    //     audio.background.play();
+    // }
     
+    audio1.play();
+    audio1.volume = 1;
+    audio1.loop = true;
+
     audio.select.play();
-    init(); //Start the game
-    animate();
-    spawnEnemies();
-    spawnPowerUps();
+    init() //Start the game
+    animate()
+    spawnEnemies()
+    spawnPowerUps()
+    metronome()
     
     gsap.to('#startModalElement', {
         opacity: 0,
@@ -414,7 +473,7 @@ startButtonElement.addEventListener('click', () => {
 
 //MUTING BUTTON
 volumeUpElement.addEventListener('click', () => {
-    audio.background.pause()
+    audio1.pause()
     volumeDownElement.style.display = 'block'
     volumeUpElement.style.display = 'none'
 
@@ -425,7 +484,7 @@ volumeUpElement.addEventListener('click', () => {
 
 //UNMUTING BUTTON
 volumeDownElement.addEventListener('click', () => {
-    audio.background.play()
+    audio1.play()
     volumeDownElement.style.display = 'none'
     volumeUpElement.style.display = 'block'
 
@@ -490,7 +549,6 @@ function updatePlayerVelocity() {
 window.addEventListener('resize', () => {
     canvas.width = innerWidth
     canvas.height = innerHeight
-
     init()
 })
 
