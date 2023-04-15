@@ -42,6 +42,8 @@ const bufferLength = analyser.frequencyBinCount;
 const dataArray = new Uint8Array(bufferLength);
 let counter = 1;
 let remainder = 0;
+// audio1.resume();
+// getAudioContext().resume();
 
 function init() {
     const x = canvas.width / 2
@@ -443,14 +445,16 @@ startButtonElement.addEventListener('click', () => {
     // Disable the start button once pressed
     startButtonElement.disabled = true;
 
-    // if (!audio.background.playing()) {
-    //     audio.background.play();
-    // }
+    if (audio1.paused) {
+        audio1.play();
+      } 
     
-    audio1.play();
+    // audio1.play();
+    
     audio1.volume = 1;
     audio1.loop = true;
 
+    audio.background.play()
     audio.select.play();
     init() //Start the game
     animate()
