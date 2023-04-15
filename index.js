@@ -28,20 +28,10 @@ let powerUps = []
 let backgroundParticles = []
 let game = false
 
-let audio1 = new Audio()
-audio1.src = "./audio/giorno.wav";
-const audioContext = new AudioContext();
-let audioSource;
-let analyser;
-audioSource = audioContext.createMediaElementSource(audio1);
-analyser = audioContext.createAnalyser();
-audioSource.connect(analyser);
-analyser.connect(audioContext.destination)
-analyser.fftSize = 256;
-const bufferLength = analyser.frequencyBinCount;
-const dataArray = new Uint8Array(bufferLength);
 let counter = 1;
 let remainder = 0;
+
+
 // audio1.resume();
 // getAudioContext().resume();
 
@@ -440,11 +430,28 @@ buttonElement.addEventListener('click', () => {
 })
 
 
+let audio1 = new Audio()
+audio1.src = "./audio/giorno.wav";
+
+let audioSource;
+let analyser;
+const audioContext = new AudioContext();
+audioSource = audioContext.createMediaElementSource(audio1);
+analyser = audioContext.createAnalyser();
+audioSource.connect(analyser);
+analyser.connect(audioContext.destination)
+analyser.fftSize = 256;
+const bufferLength = analyser.frequencyBinCount;
+const dataArray = new Uint8Array(bufferLength);
+
+
 //Start the game
 startButtonElement.addEventListener('click', () => {
     // Disable the start button once pressed
     startButtonElement.disabled = true;
 
+    
+    audioContext.resume();
     if (audio1.paused) {
         audio1.play();
       } 
