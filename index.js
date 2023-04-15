@@ -46,7 +46,9 @@ analyser.fftSize = 256;
 const bufferLength = analyser.frequencyBinCount;
 const dataArray = new Uint8Array(bufferLength);
 
-
+const barWidth = 15;
+let barHeight;
+let x;
 
 // audio1.resume();
 // getAudioContext().resume();
@@ -108,7 +110,7 @@ function spawnEnemies() {
         }
 
         enemies.push(new Enemy(x, y, radius, color, velocity))
-    }, 1000)
+    }, 2000)
 }
 
 function spawnPowerUps() {
@@ -123,7 +125,7 @@ function spawnPowerUps() {
                 y: 0
             }
         }))
-    }, 15000)
+    }, 5000)
 }
 
 function createScoreLabel({position, score}) {
@@ -152,9 +154,10 @@ function createScoreLabel({position, score}) {
 function metronome() {
     beat = setInterval(() => {
         remainder = remainder === 1 ? 0 : 1;
-        console.log(remainder)
     }, 454)
 }
+
+
 
 
 
@@ -162,11 +165,53 @@ function animate () {
     animationId = requestAnimationFrame(animate)
     c.fillStyle = 'rgba(0, 0, 0, 0.1)'
     c.fillRect(0, 0, canvas.width, canvas.height)
-    
+
+    x = 0;
     analyser.getByteFrequencyData(dataArray);
     const freq = dataArray.slice(1, 2)[0];
     
+    const color = backgroundParticles[0].color;
+    const params = color.split(',');
+    let left = params[0].split('(')
+    number = parseFloat(left[1])
+    number += 40
+    left[1] = `${number}`
+    params[0] = `${left.join('(')}`
+    const saturation = parseFloat(params[1])
+    const newSaturation = saturation * 2;
+    params[1] = `${newSaturation}%`;
+    const newColor = params.join(',');
+
+
+    for(let i = 0; i < bufferLength; i++) {
+        
+        barHeight = dataArray[i] * 1;
+        if (i < 15) {
+            barHeight *= 0.6
+        }
+        c.save()
+        c.lineWidth = 3;
+        c.globalCompositeOperation = 'difference'
+        c.translate(canvas.width/2, canvas.height/2)
+        c.rotate(i*2.4)
+        c.strokeStyle = color;
+        c.beginPath()
+        c.moveTo(0,0);
+        c.lineTo(0, barHeight);
+        c.stroke();
+        x += barWidth;
+        if(i > bufferLength * 0.5) {
+            c.beginPath()
+            c.arc(0,0, barHeight/1.3, 0, Math.PI * 2)
+            c.strokeStyle = newColor;
+            c.stroke()
+        }
+        c.restore()
+    }
     
+    //hsla(314.1235,49.9422%,50.0578%,1)
+    
+
     backgroundParticles.forEach(backgroundParticle => {
         backgroundParticle.draw()
 
@@ -175,7 +220,12 @@ function animate () {
             player.y - backgroundParticle.position.y
         )
 
-        if( freq == 255 ) {
+        const distToCenter = Math.hypot(
+            (canvas.width/2) - backgroundParticle.position.x, 
+            (canvas.height/2) - backgroundParticle.position.y
+        )
+
+        if( freq === 255 ) {
 
             if (counter % 2 === remainder ) {
                 backgroundParticle.radius = 10
@@ -196,6 +246,12 @@ function animate () {
             }
         } else if (dist > 150 && backgroundParticle.alpha > 0.1) {
             backgroundParticle.alpha -= 0.01
+        }  else if (dist > 150 && backgroundParticle.alpha < 0.1) {
+            backgroundParticle.alpha += 0.01
+        }
+
+        if(distToCenter < 110 && (!(audio1.paused))) {
+            backgroundParticle.alpha = 0
         }
     })
     
@@ -265,6 +321,7 @@ function animate () {
         enemy.update()
         //ENERY HITTING PLAYER
         const dist = Math.hypot(player.x - enemy.x, player.y - enemy.y)
+       
 
         //ENDING THE GAME   
         if(dist - enemy.radius - player.radius < 1) {
