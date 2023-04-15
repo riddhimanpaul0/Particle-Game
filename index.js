@@ -27,7 +27,7 @@ let animationId  //Declared to be able to stop the game
 let powerUps = []
 let backgroundParticles = []
 let game = false
-
+let beat
 let counter = 1;
 let remainder = 0;
 
@@ -45,6 +45,7 @@ function init() {
     powerUps = []
     animationId
     spawnPowerUpsId
+    beat
     score = 0
     scoreElement.innerHTML = 0
     backgroundParticles = []
@@ -458,13 +459,12 @@ startButtonElement.addEventListener('click', () => {
     
     audio1.volume = 1;
     audio1.loop = true;
-
-    // audio.select.play();
+    metronome()
     init() 
     animate()
     spawnEnemies()
     spawnPowerUps()
-    metronome()
+    
     
     gsap.to('#startModalElement', {
         opacity: 0,
