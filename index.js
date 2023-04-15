@@ -440,7 +440,7 @@ buttonElement.addEventListener('click', () => {
 })
 
 
-
+//Start the game
 startButtonElement.addEventListener('click', () => {
     // Disable the start button once pressed
     startButtonElement.disabled = true;
@@ -449,14 +449,11 @@ startButtonElement.addEventListener('click', () => {
         audio1.play();
       } 
     
-    // audio1.play();
-    
     audio1.volume = 1;
     audio1.loop = true;
 
-    // audio.background.play()
-    audio.select.play();
-    init() //Start the game
+    // audio.select.play();
+    init() 
     animate()
     spawnEnemies()
     spawnPowerUps()
@@ -533,7 +530,6 @@ function updatePlayerVelocity() {
 
     if (keysPressed['w']) {
         player.velocity.y -= SPEED;
-
     }
 
     if (keysPressed['s']) {

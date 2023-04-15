@@ -29,11 +29,11 @@ const audio = {
         volume: 0.2
     })
 
-    ,background: new Howl ({
-        src : './audio/bkgdaudio.wav',
-        volume: 1,
-        loop: true
-    })
+    // ,background: new Howl ({
+    //     src : './audio/bkgdaudio.wav',
+    //     volume: 1,
+    //     loop: true
+    // })
 
     // ,beat: new Howl ({
     //     src : './audio/drummoise.wav',
