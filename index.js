@@ -32,6 +32,22 @@ let counter = 1;
 let remainder = 0;
 
 
+let audio1 = new Audio()
+audio1.src = "./audio/giorno.wav";
+
+let audioSource;
+let analyser;
+const audioContext = new AudioContext();
+audioSource = audioContext.createMediaElementSource(audio1);
+analyser = audioContext.createAnalyser();
+audioSource.connect(analyser);
+analyser.connect(audioContext.destination)
+analyser.fftSize = 256;
+const bufferLength = analyser.frequencyBinCount;
+const dataArray = new Uint8Array(bufferLength);
+
+
+
 // audio1.resume();
 // getAudioContext().resume();
 
@@ -136,6 +152,7 @@ function createScoreLabel({position, score}) {
 function metronome() {
     beat = setInterval(() => {
         remainder = remainder === 1 ? 0 : 1;
+        console.log(remainder)
     }, 454)
 }
 
@@ -429,21 +446,6 @@ buttonElement.addEventListener('click', () => {
         }
     })
 })
-
-
-let audio1 = new Audio()
-audio1.src = "./audio/giorno.wav";
-
-let audioSource;
-let analyser;
-const audioContext = new AudioContext();
-audioSource = audioContext.createMediaElementSource(audio1);
-analyser = audioContext.createAnalyser();
-audioSource.connect(analyser);
-analyser.connect(audioContext.destination)
-analyser.fftSize = 256;
-const bufferLength = analyser.frequencyBinCount;
-const dataArray = new Uint8Array(bufferLength);
 
 
 //Start the game
