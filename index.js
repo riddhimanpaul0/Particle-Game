@@ -454,7 +454,7 @@ startButtonElement.addEventListener('click', () => {
     audio1.volume = 1;
     audio1.loop = true;
 
-    audio.background.play()
+    // audio.background.play()
     audio.select.play();
     init() //Start the game
     animate()
