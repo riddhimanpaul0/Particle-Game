@@ -105,8 +105,8 @@ function spawnEnemies() {
         )
     
         const velocity = {
-            x: Math.cos(angle) * 2,
-            y: Math.sin(angle) * 2
+            x: Math.cos(angle) * 1,
+            y: Math.sin(angle) * 1
         }
 
         enemies.push(new Enemy(x, y, radius, color, velocity))
@@ -237,7 +237,7 @@ function animate () {
             backgroundParticle.radius = 5
         }
         
-        counter++;
+        
         
         if(dist < 130) {
             backgroundParticle.alpha = 0
@@ -254,7 +254,7 @@ function animate () {
             backgroundParticle.alpha = 0
         }
     })
-    
+    counter++;
     counter = 0;
 
     updatePlayerVelocity()
@@ -572,7 +572,7 @@ window.addEventListener('keyup', (event) => {
 
 function updatePlayerVelocity() {
 
-    const SPEED = 0.1;
+    const SPEED = 0.08;
      // handle diagonal movement
      if (keysPressed['w'] && keysPressed['a']) {
         player.velocity.x -= SPEED - 0.05;
